@@ -1,243 +1,123 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قائمة الأعضاء والقنوات</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>ALO</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            background-color: #202225;
+            color: #fff;
             margin: 0;
-            font-family: 'Poppins', sans-serif;
+            padding: 0;
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             height: 100vh;
-            background-color: #1e003d;
         }
-
-        /* Sidebar for channels (left side) */
-        .sidebar-left {
-            width: 250px;
-            background: #2c004c;
-            color: white;
-            padding: 20px;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            overflow-y: auto;
-        }
-        .sidebar-left h2 {
-            text-align: center;
+        h1 {
             margin-bottom: 20px;
-            font-size: 24px;
-            font-weight: 600;
         }
-        .channel-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 30px;
-        }
-        .channel-item {
-            background: rgba(255, 255, 255, 0.2);
-            margin: 10px 0;
-            padding: 12px;
+        .members {
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: #2f3136;
             border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .channel-item:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        /* Sidebar for users (right side) */
-        .sidebar-right {
-            width: 250px;
-            background: #3a0078;
-            color: white;
-            padding: 20px;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            right: 0;
-            overflow-y: auto;
-        }
-        .sidebar-right h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 24px;
-            font-weight: 600;
-        }
-        .user-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 30px;
-        }
-        .user-item {
-            background: rgba(255, 255, 255, 0.2);
-            margin: 10px 0;
             padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            margin-top: 20px;
         }
-        .user-item:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .members ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
-
-        /* Main content */
-        .main-content {
-            margin-left: 250px;
-            margin-right: 250px;
-            padding: 20px;
-            flex-grow: 1;
-            background: #1e003d;
+        .members li {
+            padding: 10px;
+            background-color: #36393f;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+        .authorize-btn {
+            background-color: #5865F2;
             color: white;
-            transition: all 0.3s ease;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
         }
-        .main-content h1 {
-            font-size: 32px;
-            text-align: center;
-        }
-        .content-channel {
-            display: none;
-        }
-
-        /* Active channel content */
-        .active-channel {
-            display: block;
+        .authorize-btn:hover {
+            background-color: #4752c4;
         }
     </style>
 </head>
 <body>
-
-    <!-- Sidebar for channels -->
-    <div class="sidebar-left">
-        <h2>القنوات</h2>
-        <ul class="channel-list" id="channelList">
-            <li class="channel-item" data-channel="chat">الشات</li>
-            <li class="channel-item" data-channel="commands">الأوامر</li>
-            <li class="channel-item" data-channel="suggestions">الاقتراحات</li>
-            <li class="channel-item" data-channel="support">الدعم</li>
-            <li class="channel-item" data-channel="announcements">الإعلانات</li>
+    <h1>مرحبًا بك في ALO</h1>
+    <button class="authorize-btn" onclick="authorizeBot()">تسجيل الدخول باستخدام Discord</button>
+    <div class="members">
+        <h3>الأعضاء:</h3>
+        <ul id="members-list">
+            <!-- الأعضاء ستتم إضافتهم هنا -->
         </ul>
-    </div>
-
-    <!-- Sidebar for users -->
-    <div class="sidebar-right">
-        <h2>قائمة الأعضاء</h2>
-        <ul class="user-list" id="userList">
-            <!-- Users will be populated here -->
-        </ul>
-    </div>
-
-    <!-- Main content -->
-    <div class="main-content">
-        <h1>مرحبًا بك في صفحة القنوات</h1>
-        <p>اختر قناة من القائمة على اليسار لعرض محتواها.</p>
-
-        <!-- Channel contents -->
-        <div class="content-channel chat">
-            <h2>الشات</h2>
-            <p>هنا يمكنك التحدث مع الأعضاء.</p>
-        </div>
-        <div class="content-channel commands">
-            <h2>الأوامر</h2>
-            <p>هنا يمكنك تنفيذ الأوامر المختلفة.</p>
-        </div>
-        <div class="content-channel suggestions">
-            <h2>الاقتراحات</h2>
-            <p>هنا يمكنك مشاركة اقتراحاتك.</p>
-        </div>
-        <div class="content-channel support">
-            <h2>الدعم</h2>
-            <p>هنا يمكنك طلب المساعدة والدعم.</p>
-        </div>
-        <div class="content-channel announcements">
-            <h2>الإعلانات</h2>
-            <p>هنا يمكنك الاطلاع على آخر الإعلانات.</p>
-        </div>
     </div>
 
     <script>
-        // Function to store a new user when they create an account
-        function registerUser(username) {
-            if (username) {
-                const storedUsersData = localStorage.getItem('users');
-                const usersData = storedUsersData ? JSON.parse(storedUsersData) : [];
+        const CLIENT_ID = "1333040394040250471"; // ضع Client ID الخاص بك
+        const REDIRECT_URI = "https://ihso77.github.io/itsalo/ALO.html"; // رابط Redirect
+        const AUTH_URL = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify`;
 
-                // Add new user to the list
-                usersData.push({ username });
-
-                // Save updated user list to localStorage
-                localStorage.setItem('users', JSON.stringify(usersData));
-
-                // Refresh the user list
-                populateUserList();
-            }
+        // عند النقر على زر تسجيل الدخول
+        function authorizeBot() {
+            window.location.href = AUTH_URL;
         }
 
-        // Function to populate the sidebar with users who have created an account
-        function populateUserList() {
-            const userList = document.getElementById('userList');
-            userList.innerHTML = ""; // Clear the list first
+        // الحصول على اسم المستخدم بعد العودة من Discord
+        async function fetchUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get("code");
 
-            // Get all user data from localStorage
-            const storedUsersData = localStorage.getItem('users');
-            const usersData = storedUsersData ? JSON.parse(storedUsersData) : [];
-
-            if (usersData.length > 0) {
-                usersData.forEach(user => {
-                    const userItem = document.createElement('li');
-                    userItem.classList.add('user-item');
-                    userItem.textContent = user.username;
-
-                    // Add click event to each user item
-                    userItem.addEventListener('click', () => {
-                        alert(`تم النقر على ${user.username}`);
+            if (code) {
+                try {
+                    // طلب رمز الوصول
+                    const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        body: new URLSearchParams({
+                            client_id: CLIENT_ID,
+                            client_secret: "ZzSKbcyw5A6IgKERuFEEaHx1Njhay3Iv", // ضع Client Secret الخاص بك
+                            grant_type: "authorization_code",
+                            code: code,
+                            redirect_uri: REDIRECT_URI,
+                        }),
                     });
+                    const tokenData = await tokenResponse.json();
+                    const accessToken = tokenData.access_token;
 
-                    userList.appendChild(userItem);
-                });
-            } else {
-                const noUsersItem = document.createElement('li');
-                noUsersItem.classList.add('user-item');
-                noUsersItem.textContent = 'لا يوجد أعضاء سجلوا بعد';
-                userList.appendChild(noUsersItem);
+                    // طلب بيانات المستخدم
+                    const userResponse = await fetch("https://discord.com/api/users/@me", {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    });
+                    const userData = await userResponse.json();
+
+                    // إضافة اسم المستخدم إلى قائمة الأعضاء
+                    const membersList = document.getElementById("members-list");
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `${userData.username}#${userData.discriminator}`;
+                    membersList.appendChild(listItem);
+                } catch (error) {
+                    console.error("حدث خطأ أثناء جلب بيانات المستخدم:", error);
+                }
             }
         }
 
-        // Function to show the selected channel content
-        function showChannelContent(channel) {
-            const allChannels = document.querySelectorAll('.content-channel');
-            allChannels.forEach(ch => ch.classList.remove('active-channel')); // Hide all channels
-
-            const activeChannel = document.querySelector(`.content-channel.${channel}`);
-            if (activeChannel) {
-                activeChannel.classList.add('active-channel'); // Show the selected channel
-            }
-        }
-
-        // Event listeners for channel items
-        const channelItems = document.querySelectorAll('.channel-item');
-        channelItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const channel = item.getAttribute('data-channel');
-                showChannelContent(channel); // Display the content of the selected channel
-            });
-        });
-
-        // Call the function to populate the user list when the page loads
-        window.onload = () => {
-            populateUserList();
-            showChannelContent('chat'); // Default show the 'chat' channel
-        };
-
-        // Simulating user registration (you can replace this with an actual registration form)
-        // For testing, you can manually call this function with a username
-        registerUser("User123"); // Simulate registration of "User123"
+        // استدعاء الدالة عند تحميل الصفحة
+        fetchUserData();
     </script>
-
 </body>
 </html>
