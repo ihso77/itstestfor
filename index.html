@@ -33,6 +33,13 @@
         .user-info {
             text-align: center;
             margin-bottom: 20px;
+            display: none; /* مخفي افتراضياً */
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .user-info img {
@@ -74,20 +81,28 @@
         .authorize-btn:hover {
             background-color: #4752c4;
         }
+
+        .welcome-message {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #43b581;
+            display: none; /* مخفي افتراضياً */
+        }
     </style>
 </head>
 <body>
     <div class="sidebar" id="sidebar">
         <h2>ALO</h2>
-        <div class="user-info" id="user-info" style="display: none;">
+        <div class="user-info" id="user-info">
             <img id="user-avatar" src="" alt="User Avatar">
             <h3 id="user-name">Username</h3>
-            <p id="user-coins">Coins: 0</p>
+            <p id="user-id">ID: ####</p>
         </div>
     </div>
 
     <div class="main-content">
         <button class="authorize-btn" id="authorize-btn" onclick="authorizeBot()">تسجيل الدخول باستخدام Discord</button>
+        <div class="welcome-message" id="welcome-message">مرحباً بك في ALO!</div>
     </div>
 
     <script>
@@ -95,19 +110,16 @@
         const REDIRECT_URI = "https://ihso77.github.io/itsalo/index.html"; // رابط Redirect
         const AUTH_URL = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify`;
 
-        // عند النقر على زر تسجيل الدخول
         function authorizeBot() {
             window.location.href = AUTH_URL;
         }
 
-        // الحصول على اسم المستخدم بعد العودة من Discord
         async function fetchUserData() {
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get("code");
 
             if (code) {
                 try {
-                    // طلب رمز الوصول
                     const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
                         method: "POST",
                         headers: {
@@ -124,7 +136,6 @@
                     const tokenData = await tokenResponse.json();
                     const accessToken = tokenData.access_token;
 
-                    // طلب بيانات المستخدم
                     const userResponse = await fetch("https://discord.com/api/users/@me", {
                         headers: {
                             Authorization: `Bearer ${accessToken}`,
@@ -132,31 +143,27 @@
                     });
                     const userData = await userResponse.json();
 
-                    // تحديث واجهة المستخدم
-                    document.getElementById("authorize-btn").style.display = "none"; // إخفاء الزر
+                    document.getElementById("authorize-btn").style.display = "none";
+
                     const userInfo = document.getElementById("user-info");
-                    const userAvatar = document.getElementById("user-avatar");
-                    const userName = document.getElementById("user-name");
-                    const userCoins = document.getElementById("user-coins");
+                    document.getElementById("user-avatar").src = userData.avatar
+                        ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`
+                        : "https://cdn.discordapp.com/embed/avatars/0.png";
+                    document.getElementById("user-name").textContent = `${userData.username}#${userData.discriminator}`;
+                    document.getElementById("user-id").textContent = `ID: ${userData.id}`;
 
-                    userAvatar.src = userData.avatar 
-                        ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png` 
-                        : "https://cdn.discordapp.com/embed/avatars/0.png"; // صورة افتراضية
-                    userName.textContent = `${userData.username}#${userData.discriminator}`;
-                    userCoins.textContent = `Coins: ${Math.floor(Math.random() * 1000)}`; // عدد كوينز عشوائي
-                    userInfo.style.display = "block"; // عرض القائمة الجانبية
+                    userInfo.style.display = "block";
 
-                    // نقل المستخدم إلى صفحة home.html بعد تسجيل الدخول
-                    setTimeout(() => {
-                        window.location.href = "home.html";
-                    }, 2000); // انتظار لمدة ثانيتين قبل النقل
+                    const welcomeMessage = document.getElementById("welcome-message");
+                    welcomeMessage.textContent = `مرحباً ${userData.username}!`; // رسالة ترحيب مخصصة
+                    welcomeMessage.style.display = "block";
+
                 } catch (error) {
                     console.error("حدث خطأ أثناء جلب بيانات المستخدم:", error);
                 }
             }
         }
 
-        // استدعاء الدالة عند تحميل الصفحة
         fetchUserData();
     </script>
 </body>
