@@ -145,6 +145,11 @@
                     userName.textContent = `${userData.username}#${userData.discriminator}`;
                     userCoins.textContent = `Coins: ${Math.floor(Math.random() * 1000)}`; // عدد كوينز عشوائي
                     userInfo.style.display = "block"; // عرض القائمة الجانبية
+
+                    // نقل المستخدم إلى صفحة home.html بعد تسجيل الدخول
+                    setTimeout(() => {
+                        window.location.href = "home.html";
+                    }, 2000); // انتظار لمدة ثانيتين قبل النقل
                 } catch (error) {
                     console.error("حدث خطأ أثناء جلب بيانات المستخدم:", error);
                 }
