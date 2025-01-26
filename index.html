@@ -10,36 +10,57 @@
             background-color: #202225;
             color: #fff;
             margin: 0;
-            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2f3136;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .user-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .user-info img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            border: 3px solid #5865F2;
+        }
+
+        .user-info h3 {
+            margin: 5px 0;
+        }
+
+        .user-info p {
+            margin: 0;
+            font-size: 14px;
+            color: #b9bbbe;
+        }
+
+        .main-content {
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
         }
-        h1 {
-            margin-bottom: 20px;
-        }
-        .members {
-            width: 300px;
-            max-height: 400px;
-            overflow-y: auto;
-            background-color: #2f3136;
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 20px;
-        }
-        .members ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .members li {
-            padding: 10px;
-            background-color: #36393f;
-            margin-bottom: 5px;
-            border-radius: 4px;
-        }
+
         .authorize-btn {
             background-color: #5865F2;
             color: white;
@@ -47,20 +68,26 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 18px;
         }
+
         .authorize-btn:hover {
             background-color: #4752c4;
         }
     </style>
 </head>
 <body>
-    <h1>مرحبًا بك في ALO</h1>
-    <button class="authorize-btn" onclick="authorizeBot()">تسجيل الدخول باستخدام Discord</button>
-    <div class="members">
-        <h3>الأعضاء:</h3>
-        <ul id="members-list">
-            <!-- الأعضاء ستتم إضافتهم هنا -->
-        </ul>
+    <div class="sidebar" id="sidebar">
+        <h2>ALO</h2>
+        <div class="user-info" id="user-info" style="display: none;">
+            <img id="user-avatar" src="" alt="User Avatar">
+            <h3 id="user-name">Username</h3>
+            <p id="user-coins">Coins: 0</p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <button class="authorize-btn" id="authorize-btn" onclick="authorizeBot()">تسجيل الدخول باستخدام Discord</button>
     </div>
 
     <script>
@@ -105,11 +132,19 @@
                     });
                     const userData = await userResponse.json();
 
-                    // إضافة اسم المستخدم إلى قائمة الأعضاء
-                    const membersList = document.getElementById("members-list");
-                    const listItem = document.createElement("li");
-                    listItem.textContent = `${userData.username}#${userData.discriminator}`;
-                    membersList.appendChild(listItem);
+                    // تحديث واجهة المستخدم
+                    document.getElementById("authorize-btn").style.display = "none"; // إخفاء الزر
+                    const userInfo = document.getElementById("user-info");
+                    const userAvatar = document.getElementById("user-avatar");
+                    const userName = document.getElementById("user-name");
+                    const userCoins = document.getElementById("user-coins");
+
+                    userAvatar.src = userData.avatar 
+                        ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png` 
+                        : "https://cdn.discordapp.com/embed/avatars/0.png"; // صورة افتراضية
+                    userName.textContent = `${userData.username}#${userData.discriminator}`;
+                    userCoins.textContent = `Coins: ${Math.floor(Math.random() * 1000)}`; // عدد كوينز عشوائي
+                    userInfo.style.display = "block"; // عرض القائمة الجانبية
                 } catch (error) {
                     console.error("حدث خطأ أثناء جلب بيانات المستخدم:", error);
                 }
